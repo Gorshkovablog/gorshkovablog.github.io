@@ -48,6 +48,37 @@ jobs:
               <body>Verification: 30b210ff2b20ea26</body>
           </html>
           HTML
+      - name: Install Yandex Metrika
+        run: |
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+
+          counter = '''
+          <!-- Yandex.Metrika counter -->
+          <script type="text/javascript">
+              (function(m,e,t,r,i,k,a){
+                  m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+                  m[i].l=1*new Date();
+                  for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+                  k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+              })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=114142362', 'ym');
+
+              ym(114142362, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+          </script>
+          <noscript><div><img src="https://mc.yandex.ru/watch/114142362" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+          <!-- /Yandex.Metrika counter -->
+          '''
+          site = Path('_site')
+          for page in [site / '404.html', *sorted(site.rglob('index.html'))]:
+              html = page.read_text(encoding='utf-8')
+              if 'metrika/tag.js?id=114142362' in html:
+                  continue
+              updated, count = re.subn(r'<body\b[^>]*>', lambda match: match[0] + counter, html, count=1)
+              if count != 1:
+                  raise ValueError(f'Missing body element in {page}')
+              page.write_text(updated, encoding='utf-8')
+          PY
       - name: Upload the site
         uses: actions/upload-pages-artifact@v4
         with:
