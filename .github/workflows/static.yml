@@ -31,6 +31,7 @@ jobs:
         run: |
           unzip -q domokhozyayka-site-1.zip -d _site
           unzip -q domokhozyayka-site-2.zip -d _site
+          find _site -type f -name '*.html' -exec sed -i 's|https://skobeevdigital-cmd.github.io|https://gorshkovablog.github.io|g' {} +
           test -s _site/index.html
           test -s _site/home.js
           test -s _site/recipes/index.html
