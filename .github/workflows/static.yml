@@ -38,6 +38,16 @@ jobs:
           test -s _site/robots.txt
       - name: Apply search metadata
         run: python3 search-metadata.py _site
+      - name: Add Yandex Webmaster verification
+        run: |
+          cat > _site/yandex_30b210ff2b20ea26.html <<'HTML'
+          <html>
+              <head>
+                  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+              </head>
+              <body>Verification: 30b210ff2b20ea26</body>
+          </html>
+          HTML
       - name: Upload the site
         uses: actions/upload-pages-artifact@v4
         with:
