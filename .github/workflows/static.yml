@@ -36,6 +36,8 @@ jobs:
           test -s _site/home.js
           test -s _site/recipes/index.html
           test -s _site/robots.txt
+      - name: Apply search metadata
+        run: python3 search-metadata.py _site
       - name: Upload the site
         uses: actions/upload-pages-artifact@v4
         with:
